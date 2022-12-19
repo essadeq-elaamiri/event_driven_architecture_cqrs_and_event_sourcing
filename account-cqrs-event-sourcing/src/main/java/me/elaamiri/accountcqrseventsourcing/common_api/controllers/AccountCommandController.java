@@ -1,5 +1,6 @@
 package me.elaamiri.accountcqrseventsourcing.common_api.controllers;
 
+import jdk.jshell.Snippet;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import me.elaamiri.accountcqrseventsourcing.common_api.commands.CreateAccountCommand;
@@ -7,6 +8,9 @@ import me.elaamiri.accountcqrseventsourcing.common_api.dtos.CreatAccountRequestD
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,5 +36,14 @@ public class AccountCommandController {
         ));
 
         return createAccountCommandResponse;
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> exceptionHandler(Exception exception){
+        ResponseEntity<String> responseEntity = new ResponseEntity<>(
+            exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR
+        );
+
+        return responseEntity;
     }
 }
