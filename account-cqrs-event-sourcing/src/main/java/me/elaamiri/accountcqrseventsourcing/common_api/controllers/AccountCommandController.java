@@ -21,7 +21,7 @@ import java.util.concurrent.CompletableFuture;
 @RestController
 @RequestMapping(path = "/commands/account")
 @AllArgsConstructor // for injection
-@NoArgsConstructor
+//@NoArgsConstructor
 public class AccountCommandController {
 
     private CommandGateway commandGateway;
@@ -47,3 +47,5 @@ public class AccountCommandController {
         return responseEntity;
     }
 }
+
+
