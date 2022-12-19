@@ -1,4 +1,4 @@
-package me.elaamiri.accountcqrseventsourcing.common_api.controllers;
+package me.elaamiri.accountcqrseventsourcing.commands.controllers;
 
 import jdk.jshell.Snippet;
 import lombok.AllArgsConstructor;
