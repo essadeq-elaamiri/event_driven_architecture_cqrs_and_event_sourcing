@@ -7,16 +7,15 @@ import me.elaamiri.accountcqrseventsourcing.common_api.commands.CreateAccountCom
 import me.elaamiri.accountcqrseventsourcing.common_api.dtos.CreatAccountRequestDTO;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.gateway.CommandGateway;
+import org.axonframework.eventsourcing.eventstore.EventStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping(path = "/commands/account")
@@ -25,7 +24,7 @@ import java.util.concurrent.CompletableFuture;
 public class AccountCommandController {
 
     private CommandGateway commandGateway;
-
+    private EventStore eventStore;
     @RequestMapping("/create")
     public CompletableFuture<String> createAccount(@RequestBody CreatAccountRequestDTO request){
         //asynchronous
@@ -45,6 +44,15 @@ public class AccountCommandController {
         );
 
         return responseEntity;
+    }
+
+    @GetMapping("/eventStore/{account_id}")
+    /*
+    Injected
+        private EventStore eventStore;
+     */
+    public Stream eventStore(@PathVariable String account_id){
+        return eventStore.readEvents(account_id).asStream();
     }
 }
 
