@@ -15,7 +15,7 @@
     <name>account-cqrs-event-sourcing</name>
     <description>account-cqrs-event-sourcing</description>
     <properties>
-        <java.version>17</java.version>
+        <java.version>11</java.version>
     </properties>
     <dependencies>
         <dependency>

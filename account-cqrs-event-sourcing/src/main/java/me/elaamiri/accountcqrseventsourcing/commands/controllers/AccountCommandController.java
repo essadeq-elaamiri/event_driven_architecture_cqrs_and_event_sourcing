@@ -27,8 +27,8 @@ import java.util.stream.Stream;
 //@NoArgsConstructor
 public class AccountCommandController {
 
-    private CommandGateway commandGateway;
-    private EventStore eventStore;
+    private  CommandGateway commandGateway;
+    private  EventStore eventStore;
     @PostMapping("/create")
     public CompletableFuture<String> createAccount(@RequestBody CreatAccountRequestDTO request){
         //asynchronous

@@ -7,9 +7,9 @@ public class AccountCreditedEvent extends BaseEvent<String>{
     @Getter
     private double amount;
     @Getter
-    private double currency;
+    private String currency;
 
-    public AccountCreditedEvent(String s, double amount, double currency) {
+    public AccountCreditedEvent(String s, double amount, String currency) {
         super(s);
         this.amount = amount;
         this.currency = currency;

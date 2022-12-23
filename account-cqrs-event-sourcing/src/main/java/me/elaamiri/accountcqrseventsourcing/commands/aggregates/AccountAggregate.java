@@ -40,7 +40,8 @@ public class AccountAggregate {
                 // Command to event
                 createAccountCommand.getId(),
                 createAccountCommand.getInitialBalance(),
-                createAccountCommand.getCurrency()
+                createAccountCommand.getCurrency(),
+                AccountStatus.ACTIVATED
         ));
     }
 
@@ -70,7 +71,7 @@ public class AccountAggregate {
         // Business logic is fine ? SO
         // immetre un événement
         // immit an event
-        AggregateLifecycle.apply(new AccountCreatedEvent(
+        AggregateLifecycle.apply(new AccountCreditedEvent(
                 creditAccountCommand.getId(),
                 creditAccountCommand.getAmount(),
                 creditAccountCommand.getCurrency()
