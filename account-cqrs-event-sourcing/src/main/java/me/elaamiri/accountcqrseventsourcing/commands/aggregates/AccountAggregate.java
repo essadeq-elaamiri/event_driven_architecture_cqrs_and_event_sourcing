@@ -1,10 +1,12 @@
 package me.elaamiri.accountcqrseventsourcing.commands.aggregates;
 
-import lombok.NoArgsConstructor;
 import me.elaamiri.accountcqrseventsourcing.common_api.commands.CreateAccountCommand;
+import me.elaamiri.accountcqrseventsourcing.common_api.commands.CreditAccountCommand;
 import me.elaamiri.accountcqrseventsourcing.common_api.enumerations.AccountStatus;
 import me.elaamiri.accountcqrseventsourcing.common_api.events.AccountActivatedEvent;
 import me.elaamiri.accountcqrseventsourcing.common_api.events.AccountCreatedEvent;
+import me.elaamiri.accountcqrseventsourcing.common_api.events.AccountCreditedEvent;
+import me.elaamiri.accountcqrseventsourcing.common_api.exceptions.InsufficientCreditAmount;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -28,7 +30,7 @@ public class AccountAggregate {
     @CommandHandler // Subscribe to Command Bus, and listen to the CreateAccountCommand events
     public AccountAggregate(CreateAccountCommand createAccountCommand){
         // Business logic
-
+        // Every new account well have a new aggregate
         if(createAccountCommand.getInitialBalance() < 0) throw new RuntimeException("Invalid Initial Balance | Negative");
         AggregateLifecycle.apply(new AccountCreatedEvent(
                 // Command to event
@@ -55,6 +57,25 @@ public class AccountAggregate {
     @EventSourcingHandler // Changing the aggregate status
     public void on(AccountActivatedEvent accountActivatedEvent){
         this.status = accountActivatedEvent.getAccountStatus();
+    }
+
+    @CommandHandler // when the command will be sent to the Commands bus, this method will be invoked
+    public void handle(CreditAccountCommand creditAccountCommand){
+        // business logic
+        if(creditAccountCommand.getAmount() <= 100) throw new InsufficientCreditAmount("Credit Amount can not be lower than 100.");
+        // Business logic is fine ? SO
+        // immetre un événement
+        // immit an event
+        AggregateLifecycle.apply(new AccountCreatedEvent(
+                creditAccountCommand.getId(),
+                creditAccountCommand.getAmount(),
+                creditAccountCommand.getCurrency()
+        ));
+    }
+
+    @EventSourcingHandler
+    public void on(AccountCreditedEvent accountCreditedEvent){
+        this.balance += accountCreditedEvent.getAmount();
     }
 
 }

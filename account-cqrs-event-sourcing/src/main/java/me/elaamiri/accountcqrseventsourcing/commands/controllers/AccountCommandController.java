@@ -4,7 +4,9 @@ import jdk.jshell.Snippet;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import me.elaamiri.accountcqrseventsourcing.common_api.commands.CreateAccountCommand;
+import me.elaamiri.accountcqrseventsourcing.common_api.commands.CreditAccountCommand;
 import me.elaamiri.accountcqrseventsourcing.common_api.dtos.CreatAccountRequestDTO;
+import me.elaamiri.accountcqrseventsourcing.common_api.dtos.CreditAccountRequestDTO;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.eventsourcing.eventstore.EventStore;
@@ -25,7 +27,7 @@ public class AccountCommandController {
 
     private CommandGateway commandGateway;
     private EventStore eventStore;
-    @RequestMapping("/create")
+    @PostMapping("/create")
     public CompletableFuture<String> createAccount(@RequestBody CreatAccountRequestDTO request){
         //asynchronous
         CompletableFuture<String> createAccountCommandResponse = commandGateway.send(new CreateAccountCommand(
@@ -35,6 +37,17 @@ public class AccountCommandController {
         ));
 
         return createAccountCommandResponse;
+    }
+
+    @PutMapping("/credit")
+    public CompletableFuture<String> creditAccount(@RequestBody CreditAccountRequestDTO creditAccountRequestDTO){
+        CompletableFuture<String> creditAccountCommandResponse = commandGateway.send(new CreditAccountCommand(
+                creditAccountRequestDTO.getAccountId(),
+                creditAccountRequestDTO.getAmount(),
+                creditAccountRequestDTO.getCurrency()
+        ));
+
+        return creditAccountCommandResponse;
     }
 
     @ExceptionHandler(Exception.class)
@@ -54,6 +67,8 @@ public class AccountCommandController {
     public Stream eventStore(@PathVariable String account_id){
         return eventStore.readEvents(account_id).asStream();
     }
+
+
 }
 
 
