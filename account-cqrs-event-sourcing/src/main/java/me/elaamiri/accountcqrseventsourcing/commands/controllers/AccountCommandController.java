@@ -5,8 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import me.elaamiri.accountcqrseventsourcing.common_api.commands.CreateAccountCommand;
 import me.elaamiri.accountcqrseventsourcing.common_api.commands.CreditAccountCommand;
+import me.elaamiri.accountcqrseventsourcing.common_api.commands.DebitAccountCommand;
 import me.elaamiri.accountcqrseventsourcing.common_api.dtos.CreatAccountRequestDTO;
 import me.elaamiri.accountcqrseventsourcing.common_api.dtos.CreditAccountRequestDTO;
+import me.elaamiri.accountcqrseventsourcing.common_api.dtos.DebitAccountRequestDTO;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.eventsourcing.eventstore.EventStore;
@@ -48,6 +50,17 @@ public class AccountCommandController {
         ));
 
         return creditAccountCommandResponse;
+    }
+
+    @PutMapping("/debit")
+    public CompletableFuture<String> debitAccount(@RequestBody DebitAccountRequestDTO debitAccountRequestDTO){
+        CompletableFuture<String> debitAccountCommandResponse = commandGateway.send(new DebitAccountCommand(
+                debitAccountRequestDTO.getAccountId(),
+                debitAccountRequestDTO.getAmount(),
+                debitAccountRequestDTO.getCurrency()
+        ));
+
+        return debitAccountCommandResponse;
     }
 
     @ExceptionHandler(Exception.class)

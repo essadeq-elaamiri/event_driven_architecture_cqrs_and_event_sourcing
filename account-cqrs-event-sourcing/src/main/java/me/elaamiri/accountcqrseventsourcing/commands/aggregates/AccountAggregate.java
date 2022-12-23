@@ -2,11 +2,15 @@ package me.elaamiri.accountcqrseventsourcing.commands.aggregates;
 
 import me.elaamiri.accountcqrseventsourcing.common_api.commands.CreateAccountCommand;
 import me.elaamiri.accountcqrseventsourcing.common_api.commands.CreditAccountCommand;
+import me.elaamiri.accountcqrseventsourcing.common_api.commands.DebitAccountCommand;
 import me.elaamiri.accountcqrseventsourcing.common_api.enumerations.AccountStatus;
 import me.elaamiri.accountcqrseventsourcing.common_api.events.AccountActivatedEvent;
 import me.elaamiri.accountcqrseventsourcing.common_api.events.AccountCreatedEvent;
 import me.elaamiri.accountcqrseventsourcing.common_api.events.AccountCreditedEvent;
+import me.elaamiri.accountcqrseventsourcing.common_api.events.AccountDebitedEvent;
+import me.elaamiri.accountcqrseventsourcing.common_api.exceptions.InsufficientBalanceToDebitException;
 import me.elaamiri.accountcqrseventsourcing.common_api.exceptions.InsufficientCreditAmount;
+import me.elaamiri.accountcqrseventsourcing.common_api.exceptions.NegativeAmountException;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -77,5 +81,27 @@ public class AccountAggregate {
     public void on(AccountCreditedEvent accountCreditedEvent){
         this.balance += accountCreditedEvent.getAmount();
     }
+
+
+
+    // Debit command
+    @CommandHandler
+    public void handler(DebitAccountCommand debitAccountCommand){
+        if(debitAccountCommand.getAmount() < 0) throw new NegativeAmountException("Amount can't be negative");
+        //if(this.balance < debitAccountCommand.getAmount()) throw new InsufficientBalanceToDebitException(String.format("Amount must be lower than the balance (%s)", this.balance));
+        if(this.balance < debitAccountCommand.getAmount()) throw new InsufficientBalanceToDebitException(String.format("Amount must be lower than the balance (%s)", this.balance));
+        // emmit event
+        AggregateLifecycle.apply(new AccountDebitedEvent(
+                debitAccountCommand.getId(),
+                debitAccountCommand.getAmount(),
+                debitAccountCommand.getCurrency()
+        ));
+    }
+
+    @EventSourcingHandler
+    public void on(AccountDebitedEvent accountDebitedEvent){
+        this.balance -= accountDebitedEvent.getAmount();
+    }
+
 
 }
