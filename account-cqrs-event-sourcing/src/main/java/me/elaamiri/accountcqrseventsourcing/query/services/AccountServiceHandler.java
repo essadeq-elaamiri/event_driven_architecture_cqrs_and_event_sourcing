@@ -9,11 +9,13 @@ import me.elaamiri.accountcqrseventsourcing.common_api.events.AccountCreatedEven
 import me.elaamiri.accountcqrseventsourcing.common_api.events.AccountCreditedEvent;
 import me.elaamiri.accountcqrseventsourcing.common_api.events.AccountDebitedEvent;
 import me.elaamiri.accountcqrseventsourcing.common_api.exceptions.AccountNotFoundException;
+import me.elaamiri.accountcqrseventsourcing.common_api.queries.GetAllAccountQuery;
 import me.elaamiri.accountcqrseventsourcing.query.entities.Account;
 import me.elaamiri.accountcqrseventsourcing.query.entities.Operation;
 import me.elaamiri.accountcqrseventsourcing.query.repositories.AccountRepository;
 import me.elaamiri.accountcqrseventsourcing.query.repositories.OperationRepository;
 import org.axonframework.eventhandling.EventHandler;
+import org.axonframework.queryhandling.QueryHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -91,12 +93,18 @@ public class AccountServiceHandler {
 
         Operation operation = Operation.builder()
                 .amount(accountDebitedEvent.getAmount())
-                .date(new Date())
+                //.date(new Date()) // to be avoided --> the date should be affected in the writing part
+                .date(accountDebitedEvent.getOperationDate())
                 .type(OperationType.DEBIT)
                 .account(savedAccount)
                 .build();
         operationRepository.save(operation);
         log.info("New  DEBIT Operation Created.");
+    }
+
+    @QueryHandler
+    public AccountResponseDTO on(GetAllAccountQuery getAllAccountQuery){
+
     }
 
 
