@@ -1,5 +1,6 @@
 package me.elaamiri.accountcqrseventsourcing.query.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,6 +21,7 @@ public class Account {
     @Enumerated(EnumType.STRING)
     private AccountStatus accountStatus;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @OneToMany(mappedBy = "account")
     private  Collection<Operation> operations;
 }

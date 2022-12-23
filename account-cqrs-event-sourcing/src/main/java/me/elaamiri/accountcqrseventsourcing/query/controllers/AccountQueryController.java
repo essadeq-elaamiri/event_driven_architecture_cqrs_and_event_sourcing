@@ -2,9 +2,13 @@ package me.elaamiri.accountcqrseventsourcing.query.controllers;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import me.elaamiri.accountcqrseventsourcing.common_api.queries.GetAccountQuery;
+import me.elaamiri.accountcqrseventsourcing.common_api.queries.GetAllAccountsQuery;
 import me.elaamiri.accountcqrseventsourcing.query.entities.Account;
+import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,9 +21,16 @@ import java.util.List;
 public class AccountQueryController {
     private QueryGateway queryGateway;
 
-
-    @GetMapping("/")
+    @GetMapping
     public List<Account> getAllAccounts(){
-        queryGateway.query(new GET)
+        List<Account> response = queryGateway.query(new GetAllAccountsQuery(), ResponseTypes.multipleInstancesOf(Account.class)).join();
+        // that means
+        return  response;
+    }
+
+    @GetMapping("/{id}")
+    public Account consultAccount(@PathVariable String id){
+        Account account = queryGateway.query(new GetAccountQuery(id), ResponseTypes.instanceOf(Account.class)).join();
+        return account;
     }
 }

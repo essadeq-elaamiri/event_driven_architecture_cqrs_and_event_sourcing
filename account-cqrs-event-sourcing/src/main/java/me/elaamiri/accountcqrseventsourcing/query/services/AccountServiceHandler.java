@@ -2,14 +2,14 @@ package me.elaamiri.accountcqrseventsourcing.query.services;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import me.elaamiri.accountcqrseventsourcing.common_api.enumerations.AccountStatus;
 import me.elaamiri.accountcqrseventsourcing.common_api.enumerations.OperationType;
 import me.elaamiri.accountcqrseventsourcing.common_api.events.AccountActivatedEvent;
 import me.elaamiri.accountcqrseventsourcing.common_api.events.AccountCreatedEvent;
 import me.elaamiri.accountcqrseventsourcing.common_api.events.AccountCreditedEvent;
 import me.elaamiri.accountcqrseventsourcing.common_api.events.AccountDebitedEvent;
 import me.elaamiri.accountcqrseventsourcing.common_api.exceptions.AccountNotFoundException;
-import me.elaamiri.accountcqrseventsourcing.common_api.queries.GetAllAccountQuery;
+import me.elaamiri.accountcqrseventsourcing.common_api.queries.GetAccountQuery;
+import me.elaamiri.accountcqrseventsourcing.common_api.queries.GetAllAccountsQuery;
 import me.elaamiri.accountcqrseventsourcing.query.entities.Account;
 import me.elaamiri.accountcqrseventsourcing.query.entities.Operation;
 import me.elaamiri.accountcqrseventsourcing.query.repositories.AccountRepository;
@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -103,9 +104,13 @@ public class AccountServiceHandler {
     }
 
     @QueryHandler
-    public AccountResponseDTO on(GetAllAccountQuery getAllAccountQuery){
-
+    public List<Account> on(GetAllAccountsQuery getAllAccountQuery){
+        return accountRepository.findAll();
     }
 
+    @QueryHandler
+    public Account on(GetAccountQuery getAccountQuery){
+        return accountRepository.findById(getAccountQuery.getAccountId()).get();
+    }
 
 }
